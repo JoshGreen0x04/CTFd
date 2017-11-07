@@ -96,7 +96,25 @@
 							Prevent team name changes
 						</label>
 					</div>
+					<div class="checkbox">
+					<label>
+						<input id="filter_emails" name="filter_emails" type="checkbox" {% if filter_emails %}checked{% endif %}>
+							Filter emails based on regex
+						</label>
+					</div>
+          <div id="allowed_emails">
+            <div class="form-group">
+                <label for="allowed_email_regex">Allowed Email Regex:</label>
+                <input class="form-control" id='allowed_email_regex' name='allowed_email_regex' type='text'
+                    placeholder="Allowed Email Addresses"
+                    {% if allowed_email_regex is defined and allowed_email_regex != None %}value="{{ allowed_email_regex }}"{% endif %}>
+            </div>
+                <sup>Uncheck setting and update to remove email regex</sup>
+                <br>
+                <br>
+          </div>
 				</div>
+
 				<div role="tabpanel" class="tab-pane" id="email-section">
 					<ul class="nav nav-tabs" role="tablist">
 						<li role="presentation" class="active">
@@ -648,6 +666,11 @@
 			// Toggle username and password based on stored value
 			$('#mail_useauth').change(function () {
 				$('#mail_username_password').toggle(this.checked);
+			}).change();
+
+			// Toggle email filtering based on stored value
+			$('#filter_emails').change(function () {
+				$('#allowed_emails').toggle(this.checked);
 			}).change();
 		});
 	</script>

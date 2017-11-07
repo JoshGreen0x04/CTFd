@@ -136,6 +136,9 @@ def register():
         pass_long = len(password) > 128
         valid_email = re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", request.form['email'])
 
+        disallowed_email = bool(utils.get_config('filter_emails')) and \
+                           not re.match(utils.get_config('allowed_email_regex'), request.form['email'])
+
         if not valid_email:
             errors.append("That email doesn't look right")
         if names:
@@ -148,6 +151,8 @@ def register():
             errors.append('Pick a shorter password')
         if name_len:
             errors.append('Pick a longer team name')
+        if disallowed_email:
+            errors.append("Your email address isn't allowed access for this CTF. It must match: '{}'".format(utils.get_config('allowed_email_regex')))
 
         if len(errors) > 0:
             return render_template('register.html', errors=errors, name=request.form['name'], email=request.form['email'], password=request.form['password'])

@@ -117,6 +117,7 @@ def admin_config():
             mail_tls = bool(request.form.get('mail_tls', None))
             mail_ssl = bool(request.form.get('mail_ssl', None))
             mail_useauth = bool(request.form.get('mail_useauth', None))
+            filter_emails = bool(request.form.get('filter_emails', None))
         except (ValueError, TypeError):
             view_challenges_unregistered = None
             view_scoreboard_if_authed = None
@@ -128,6 +129,8 @@ def admin_config():
             mail_tls = None
             mail_ssl = None
             mail_useauth = None
+            allowed_email_regex = None
+            filter_emails = None
         finally:
             view_challenges_unregistered = utils.set_config('view_challenges_unregistered', view_challenges_unregistered)
             view_scoreboard_if_authed = utils.set_config('view_scoreboard_if_authed', view_scoreboard_if_authed)
@@ -139,9 +142,15 @@ def admin_config():
             mail_tls = utils.set_config('mail_tls', mail_tls)
             mail_ssl = utils.set_config('mail_ssl', mail_ssl)
             mail_useauth = utils.set_config('mail_useauth', mail_useauth)
+            filter_emails = utils.set_config('filter_emails', filter_emails)
 
         mail_server = utils.set_config("mail_server", request.form.get('mail_server', None))
         mail_port = utils.set_config("mail_port", request.form.get('mail_port', None))
+
+        allowed_email_regex = request.form.get('allowed_email_regex', None)
+        if allowed_email_regex.strip() == "":
+            allowed_email_regex = None # All emails are valid
+        allowed_email_regex = utils.set_config("allowed_email_regex", allowed_email_regex)
 
         if request.form.get('mail_useauth', None) and (request.form.get('mail_u', None) or request.form.get('mail_p', None)):
             if len(request.form.get('mail_u')) > 0:
@@ -206,6 +215,8 @@ def admin_config():
     prevent_registration = utils.get_config('prevent_registration')
     prevent_name_change = utils.get_config('prevent_name_change')
     verify_emails = utils.get_config('verify_emails')
+    allowed_email_regex = utils.get_config('allowed_email_regex')
+    filter_emails = utils.get_config('filter_emails')
 
     db.session.commit()
     db.session.close()
@@ -236,4 +247,6 @@ def admin_config():
                            prevent_name_change=prevent_name_change,
                            verify_emails=verify_emails,
                            view_after_ctf=view_after_ctf,
-                           themes=themes)
+                           themes=themes,
+                           allowed_email_regex=allowed_email_regex,
+                           filter_emails=filter_emails)
